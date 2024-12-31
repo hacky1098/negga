@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Remove URLs from Text and Download</title>
+</head>
+<body>
+  <h1>Remove URLs from Text File</h1>
+
+  <input type="file" id="fileInput" />
+  <br><br>
+  <textarea id="output" rows="10" cols="50" readonly></textarea>
+  <br><br>
+  <button id="removeUrlsButton">Remove URLs and Download File</button>
+
+  <script>
+    document.getElementById('removeUrlsButton').addEventListener('click', function() {
+      const fileInput = document.getElementById('fileInput');
+      const output = document.getElementById('output');
+      
+      if (fileInput.files.length === 0) {
+        alert('Please select a file');
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        let fileContent = e.target.result;
+        
+        // Regular expression to match URLs (both http and https)
+        const urlRegex = /https?:\/\/[^\s]+/g;
+
+        // Replace URLs with an empty string
+        const cleanedContent = fileContent.replace(urlRegex, '');
+
+        // Display the cleaned content in the textarea
+        output.value = cleanedContent;
+
+        // Create a Blob with the cleaned content
+        const blob = new Blob([cleanedContent], { type: 'text/plain' });
+
+        // Create a link element to trigger the file download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+
+        // Set the download attribute with the new file name
+        const newFileName = file.name.replace(/\.txt$/, '_cleaned.txt');
+        link.download = newFileName;
+
+        // Trigger the download by clicking the link
+        link.click();
+      };
+      
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
